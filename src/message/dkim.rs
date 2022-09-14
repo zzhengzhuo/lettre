@@ -385,10 +385,14 @@ fn dkim_sign_fixed_time(message: &mut Message, dkim_config: &DkimConfig, timesta
         &dkim_header,
         dkim_config.canonicalization.header,
     );
+    message.email_header = signed_headers.clone();
+    message
+        .email_header
+        .push_str(canonicalized_dkim_header.trim_end());
     let mut hashed_headers = Sha256::new();
-    hashed_headers.update(signed_headers.as_bytes());
-    hashed_headers.update(canonicalized_dkim_header.trim_end().as_bytes());
+    hashed_headers.update(message.email_header.as_bytes());
     let hashed_headers = hashed_headers.finalize();
+
     let signature = match &dkim_config.private_key.0 {
         InnerDkimSigningKey::Rsa(private_key) => base64::encode(
             private_key

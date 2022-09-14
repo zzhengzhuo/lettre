@@ -439,6 +439,7 @@ impl MessageBuilder {
             headers: res.headers,
             body,
             envelope,
+            email_header: String::new(),
         })
     }
 
@@ -482,6 +483,8 @@ pub struct Message {
     headers: Headers,
     body: MessageBody,
     envelope: Envelope,
+    #[cfg(feature = "dkim")]
+    pub email_header: String,
 }
 
 #[derive(Clone, Debug)]
